@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>safeTransferFrom</title>
+    <style>
+        * {
+            /* border: 1px solid black; */
+            font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        .field {
+            margin-bottom: 1rem;
+        }
+        .field h4 {
+            margin: 0;
+            font-weight: 500;
+        }
+        .field input {
+            width: 19rem;
+            outline: none;
+            background-color: #cfcfcf;
+            border: none;
+            border-radius: .2rem;
+            height: 1.5rem;
+            padding-left: .5rem;
+        }
+        .field input:hover {
+            background-color: #afafaf;
+        }
+        .inner-container button {
+            border: none;
+            height: 2rem;
+            width: 19.6rem;
+            border-radius: .2rem;
+            margin-top: .5rem;
+        }
+        .inner-container p {
+            margin-top: .4rem;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>safeTransferFrom</h2>
+
+        <div class="field">
+            <h4>FROM</h4>
+            <input id="input-from" type="text" placeholder="0x0000000000000000000000000000000000000000" maxlength="42">
+        </div>
+        <div class="field">
+            <h4>TO</h4>
+            <input id="input-to" type="text" placeholder="0x0000000000000000000000000000000000000000" maxlength="42">
+        </div>
+        <div class="field">
+            <h4>TOKEN CONTRACT</h4>
+            <input id="input-token-contract" type="text" placeholder="0x0000000000000000000000000000000000000000" maxlength="42">
+        </div>
+        <div class="field">
+            <h4>TOKEN ID</h4>
+            <input id="input-token-id" type="text" placeholder="0001" maxlength="10">
+        </div>
+
+        <div class="inner-container">
+            <button>EXECUTE</button>
+            <p>STATUS: <span class="status">IDLE</span></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <script>
+        async function main() {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = await provider.getSigner();
+            const senderAddress = await signer.getAddress();
+
+            let inputFrom = document.querySelector('#input-from').value;
+            let inputTo = document.querySelector('#input-to').value;
+            let inputTokenContract = document.querySelector('#input-token-contract').value;
+            let inputTokenId = document.querySelector('#input-token-id').value;
+
+            let contract = new ethers.Contract(inputTokenContract, ['function safeTransferFrom(address from, address to, uint256 tokenId)'], signer);
+            try {
+                await contract.safeTransferFrom(inputFrom, inputTo, inputTokenId);
+                document.querySelector('.status').style.color = '#10b53c';
+                document.querySelector('.status').innerHTML = 'SUCCESS';
+            } catch (error) {
+                document.querySelector('.status').style.color = '#fa0000';
+                document.querySelector('.status').innerHTML = 'ERROR';
+                console.log(error.message);
+            }
+        }
+        document.querySelector('button').addEventListener('click', () => main());
+    </script>
+</body>
+</html>
