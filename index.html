@@ -76,7 +76,7 @@
 
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = await provider.getSigner();
-            const senderAddress = await signer.getAddress();
+            // const senderAddress = await signer.getAddress();
 
             let inputFrom = document.querySelector('#input-from').value;
             let inputTo = document.querySelector('#input-to').value;
